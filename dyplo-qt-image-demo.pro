@@ -35,3 +35,6 @@ FORMS += \
 
 RESOURCES += \
     resources.qrc
+
+target.path = /usr/bin
+INSTALLS += target
