@@ -9,6 +9,40 @@ struct DyploImageContext
     DyploImageContext():
         hwControl(hwContext)
     {}
+
+    dyplo::HardwareConfig *createConfig(const char *name)
+    {
+        /* Find a matching PR node */
+        unsigned int candidates = hwContext.getAvailablePartitions(name);
+        if (candidates == 0)
+            throw dyplo::IOException(name, ENODEV);
+        int id = 0;
+        while (candidates)
+        {
+            if ((candidates & 0x01) != 0)
+            {
+                int handle = hwContext.openConfig(id, O_RDWR);
+                if (handle == -1)
+                {
+                    if (errno != EBUSY) /* Non existent? Bail out, last node */
+                        throw dyplo::IOException(name);
+                }
+                else
+                {
+                    hwControl.disableNode(id);
+                    std::string filename = hwContext.findPartition(name, id);
+                    {
+                        dyplo::HardwareProgrammer programmer(hwContext, hwControl);
+                        programmer.fromFile(filename.c_str());
+                    }
+                    return new dyplo::HardwareConfig(handle);
+                }
+            }
+            ++id;
+            candidates >>= 1;
+        }
+        throw dyplo::IOException(name, ENODEV);
+    }
 };
 
 struct DyploImagePipeline
@@ -78,30 +112,45 @@ struct DyploImagePipeline
 
 DyploImageProcessor::DyploImageProcessor():
     diContext(NULL),
-    dip(NULL)
+    dip(NULL),
+    pr_node(NULL)
 {
 }
 
 DyploImageProcessor::~DyploImageProcessor()
 {
+    delete pr_node;
     delete dip;
     delete diContext;
 }
 
 void DyploImageProcessor::createPipeline(const char *partial)
 {
+
     if (!diContext)
         diContext = new DyploImageContext();
-    if (dip)
-        delete dip;
-
-    dip = new DyploImagePipeline(this, diContext, -1);
+    delete dip;
+    delete pr_node;
+    int node_id = -1;
+    if (partial)
+    {
+        pr_node = diContext->createConfig(partial);
+        node_id = pr_node->getNodeIndex();
+    }
+    dip = new DyploImagePipeline(this, diContext, node_id);
+    /*
+     * createConfig disables the node while programming. Now that all the
+     * routing has been done, the node must be enabled again so it will
+     * process data.
+     */
+    if (pr_node)
+        pr_node->enableNode();
 }
 
 void DyploImageProcessor::processImageSync(const QImage &input)
 {
     if (!dip)
-        createPipeline(NULL);
+        createPipeline("contrast");
     dip->sendImage(input);
     dip->receiveImage();
 }

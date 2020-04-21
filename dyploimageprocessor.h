@@ -8,6 +8,10 @@
 struct DyploImagePipeline;
 struct DyploImageContext;
 
+namespace dyplo {
+    class HardwareConfig;
+}
+
 class DyploImageProcessor: public QObject
 {
     Q_OBJECT
@@ -28,6 +32,7 @@ signals:
 protected:
     DyploImageContext *diContext;
     DyploImagePipeline *dip;
+    dyplo::HardwareConfig *pr_node;
 };
 
 #endif // DYPLOIMAGEPROCESSOR_H
