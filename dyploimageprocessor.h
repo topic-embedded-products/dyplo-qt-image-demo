@@ -12,6 +12,8 @@ namespace dyplo {
     class HardwareConfig;
 }
 
+class QSocketNotifier;
+
 class DyploImageProcessor: public QObject
 {
     Q_OBJECT
@@ -23,16 +25,22 @@ public:
     // Pass pixels through dyplo and wait for result. Blocks the UI.
     // will emit the renderedimage call synchronously
     void processImageSync(const QImage &input);
+    // Sends pixels to process and signals when done
+    void processImageASync(const QImage &input);
 
     void imageReceived(const QImage &image);
 
 signals:
     void renderedImage(const QImage &image);
 
+private slots:
+    void frameAvailableDyplo(int socket);
+
 protected:
     DyploImageContext *diContext;
     DyploImagePipeline *dip;
     dyplo::HardwareConfig *pr_node;
+    QSocketNotifier *fromLogicNotifier;
 };
 
 #endif // DYPLOIMAGEPROCESSOR_H

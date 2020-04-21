@@ -49,3 +49,20 @@ void MainWindow::on_pbQuit_clicked()
 {
     close();
 }
+
+void MainWindow::on_pbGoAsync_clicked()
+{
+    const QPixmap *input = ui->lblInputImage->pixmap();
+    QImage inputImage = input->toImage();
+    ui->lblOutputImage->setText("");
+
+    try {
+        dip.processImageASync(inputImage);
+    }
+    catch (const std::exception &ex)
+    {
+        QMessageBox msgBox;
+        msgBox.setText(ex.what());
+        msgBox.exec();
+    }
+}

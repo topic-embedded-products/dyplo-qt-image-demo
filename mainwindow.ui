@@ -107,13 +107,13 @@
           </rect>
          </property>
          <property name="text">
-          <string>Go!</string>
+          <string>Go! (Sync)</string>
          </property>
         </widget>
         <widget class="QPushButton" name="pbQuit">
          <property name="geometry">
           <rect>
-           <x>310</x>
+           <x>460</x>
            <y>10</y>
            <width>89</width>
            <height>25</height>
@@ -121,6 +121,19 @@
          </property>
          <property name="text">
           <string>Quit</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="pbGoAsync">
+         <property name="geometry">
+          <rect>
+           <x>110</x>
+           <y>10</y>
+           <width>89</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Go (Async)</string>
          </property>
         </widget>
        </widget>

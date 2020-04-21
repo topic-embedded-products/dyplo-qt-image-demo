@@ -1,5 +1,6 @@
 #include "dyploimageprocessor.h"
 #include <dyplo/hardware.hpp>
+#include <QSocketNotifier>
 
 struct DyploImageContext
 {
@@ -108,17 +109,24 @@ struct DyploImagePipeline
         block->bytes_used = blockSize;
         from_logic.enqueue(block);
     }
+
+    int waitHandle() const
+    {
+        return from_logic.handle;
+    }
 };
 
 DyploImageProcessor::DyploImageProcessor():
     diContext(NULL),
     dip(NULL),
-    pr_node(NULL)
+    pr_node(NULL),
+    fromLogicNotifier(NULL)
 {
 }
 
 DyploImageProcessor::~DyploImageProcessor()
 {
+    delete fromLogicNotifier;
     delete pr_node;
     delete dip;
     delete diContext;
@@ -126,11 +134,21 @@ DyploImageProcessor::~DyploImageProcessor()
 
 void DyploImageProcessor::createPipeline(const char *partial)
 {
-
     if (!diContext)
         diContext = new DyploImageContext();
+
+    if (fromLogicNotifier)
+    {
+        delete fromLogicNotifier;
+        fromLogicNotifier = NULL;
+    }
+
     delete dip;
+    dip = NULL;
+
     delete pr_node;
+    pr_node = NULL;
+
     int node_id = -1;
     if (partial)
     {
@@ -149,13 +167,44 @@ void DyploImageProcessor::createPipeline(const char *partial)
 
 void DyploImageProcessor::processImageSync(const QImage &input)
 {
+    if (fromLogicNotifier)
+    {
+        delete fromLogicNotifier;
+        fromLogicNotifier = NULL;
+    }
+
     if (!dip)
         createPipeline("contrast");
     dip->sendImage(input);
     dip->receiveImage();
 }
 
+void DyploImageProcessor::processImageASync(const QImage &input)
+{
+    if (fromLogicNotifier)
+    {
+        delete fromLogicNotifier;
+        fromLogicNotifier = NULL;
+    }
+
+    if (!dip)
+        createPipeline("contrast");
+
+    /* dyplo offers poll/select for its descriptors, so you can use a QSocketNotifier to wait for events */
+    fromLogicNotifier = new QSocketNotifier(dip->waitHandle(), QSocketNotifier::Read, this);
+    connect(fromLogicNotifier, SIGNAL(activated(int)), this, SLOT(frameAvailableDyplo(int)));
+    fromLogicNotifier->setEnabled(true);
+
+    dip->sendImage(input);
+}
+
 void DyploImageProcessor::imageReceived(const QImage &image)
 {
     emit renderedImage(image);
+}
+
+void DyploImageProcessor::frameAvailableDyplo(int)
+{
+    if (dip)
+        dip->receiveImage();
 }
