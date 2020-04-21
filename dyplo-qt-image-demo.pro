@@ -11,6 +11,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = dyplo-qt-image-demo
 TEMPLATE = app
 
+# Add dependency on libdyplo
+CONFIG += link_pkgconfig
+PKGCONFIG += dyplo
+
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -25,10 +29,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    dyploimageprocessor.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    dyploimageprocessor.h
 
 FORMS += \
         mainwindow.ui

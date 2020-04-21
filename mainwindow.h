@@ -15,6 +15,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void updateOutput(const QImage &image);
+
 private slots:
     void on_pbGo_clicked();
 
