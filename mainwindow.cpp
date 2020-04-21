@@ -17,13 +17,22 @@ MainWindow::~MainWindow()
 
 void MainWindow::updateOutput(const QImage &image)
 {
-    ui->lblOutputImage->setPixmap(QPixmap::fromImage(image));
+    QPixmap pixmap = QPixmap::fromImage(image);
+    /*
+     * The data in the image object is only valid in this scope, and will be
+     * lost once this method returns. Qt will attempt to keep only a pointer
+     * to the data, unless we call "detach" to make a copy explicitly.
+     * See: https://doc.qt.io/qt-5/implicit-sharing.html
+     */
+    pixmap.detach();
+    ui->lblOutputImage->setPixmap(pixmap);
 }
 
 void MainWindow::on_pbGo_clicked()
 {
     const QPixmap *input = ui->lblInputImage->pixmap();
     QImage inputImage = input->toImage();
+    ui->lblOutputImage->setText("");
 
     try {
         DyploImageProcessor p;
