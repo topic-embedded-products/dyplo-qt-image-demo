@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>input-image.jpg</file>
+        <file alias="inputimage">input-image.jpg</file>
     </qresource>
 </RCC>

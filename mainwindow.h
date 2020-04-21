@@ -21,6 +21,8 @@ public slots:
 private slots:
     void on_pbGo_clicked();
 
+    void on_pbQuit_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

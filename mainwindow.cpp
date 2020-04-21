@@ -37,3 +37,8 @@ void MainWindow::on_pbGo_clicked()
         msgBox.exec();
     }
 }
+
+void MainWindow::on_pbQuit_clicked()
+{
+    close();
+}
