@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <dyploimageprocessor.h>
 
 namespace Ui {
 class MainWindow;
@@ -22,6 +23,9 @@ private slots:
     void on_pbGo_clicked();
 
     void on_pbQuit_clicked();
+
+protected:
+    DyploImageProcessor dip;
 
 private:
     Ui::MainWindow *ui;

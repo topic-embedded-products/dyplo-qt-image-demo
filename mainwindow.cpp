@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "dyploimageprocessor.h"
 #include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -8,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    connect(&dip, SIGNAL(renderedImage(QImage)), this, SLOT(updateOutput(QImage)));
 }
 
 MainWindow::~MainWindow()
@@ -35,9 +35,7 @@ void MainWindow::on_pbGo_clicked()
     ui->lblOutputImage->setText("");
 
     try {
-        DyploImageProcessor p;
-        connect(&p, SIGNAL(renderedImage(QImage)), this, SLOT(updateOutput(QImage)));
-        p.processImageSync(inputImage);
+        dip.processImageSync(inputImage);
     }
     catch (const std::exception &ex)
     {
