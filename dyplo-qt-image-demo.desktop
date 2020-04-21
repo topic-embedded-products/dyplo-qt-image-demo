@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Dyplo Reconfiguration Demo
+Exec=/usr/bin/dyplo-qt-image-demo
+Categories=Development
+Icon=/usr/share/icons/hicolor/128x128/apps/dyplo-qt-image-demo-icon.png
