@@ -1,11 +1,19 @@
 #include "dyploimageprocessor.h"
 #include <dyplo/hardware.hpp>
 
+struct DyploImageContext
+{
+    dyplo::HardwareContext hwContext;
+    dyplo::HardwareControl hwControl;
+
+    DyploImageContext():
+        hwControl(hwContext)
+    {}
+};
+
 struct DyploImagePipeline
 {
     DyploImageProcessor *owner;
-    dyplo::HardwareContext hwContext;
-    dyplo::HardwareControl hwControl;
     dyplo::HardwareDMAFifo from_logic;
     dyplo::HardwareFifo to_logic;
     unsigned int blockSize;
@@ -14,15 +22,22 @@ struct DyploImagePipeline
     int bpl;
     QImage::Format format;
 
-    DyploImagePipeline(DyploImageProcessor *_owner):
+    DyploImagePipeline(DyploImageProcessor *_owner, DyploImageContext *diContext, int processing_node_id):
         owner(_owner),
-        hwControl(hwContext),
-        from_logic(hwContext.openAvailableDMA(O_RDONLY)),
-        to_logic(hwContext.openAvailableDMA(O_RDWR)),
+        from_logic(diContext->hwContext.openAvailableDMA(O_RDONLY)),
+        to_logic(diContext->hwContext.openAvailableDMA(O_RDWR)),
         blockSize(0)
     {
-        // Set up routing (i.o.w. do nothing...)
-        from_logic.addRouteFrom(to_logic.getNodeAndFifoIndex());
+        if (processing_node_id < 0)
+        {
+            // Set up routing (i.o.w. do nothing...)
+            from_logic.addRouteFrom(to_logic.getNodeAndFifoIndex());
+        }
+        else
+        {
+            from_logic.addRouteFrom(processing_node_id);
+            to_logic.addRouteTo(processing_node_id);
+        }
     }
 
     void setBlockSize(unsigned int blocksize)
@@ -62,19 +77,31 @@ struct DyploImagePipeline
 };
 
 DyploImageProcessor::DyploImageProcessor():
-      dip(NULL)
+    diContext(NULL),
+    dip(NULL)
 {
 }
 
 DyploImageProcessor::~DyploImageProcessor()
 {
     delete dip;
+    delete diContext;
+}
+
+void DyploImageProcessor::createPipeline(const char *partial)
+{
+    if (!diContext)
+        diContext = new DyploImageContext();
+    if (dip)
+        delete dip;
+
+    dip = new DyploImagePipeline(this, diContext, -1);
 }
 
 void DyploImageProcessor::processImageSync(const QImage &input)
 {
     if (!dip)
-        dip = new DyploImagePipeline(this);
+        createPipeline(NULL);
     dip->sendImage(input);
     dip->receiveImage();
 }

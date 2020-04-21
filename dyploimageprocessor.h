@@ -6,6 +6,7 @@
 
 /* Inner workings, no need to publish this */
 struct DyploImagePipeline;
+struct DyploImageContext;
 
 class DyploImageProcessor: public QObject
 {
@@ -25,6 +26,7 @@ signals:
     void renderedImage(const QImage &image);
 
 protected:
+    DyploImageContext *diContext;
     DyploImagePipeline *dip;
 };
 
