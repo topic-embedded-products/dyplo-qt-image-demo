@@ -22,9 +22,10 @@ public:
     ~DyploImageProcessor();
 
     void createPipeline(const char* partial);
+    void releasePipeline();
     // Pass pixels through dyplo and wait for result. Blocks the UI.
     // will emit the renderedimage call synchronously
-    void processImageSync(const QImage &input);
+    void processImageSync(const QImage &input, const char *partial);
     // Sends pixels to process and signals when done
     void processImageASync(const QImage &input);
 

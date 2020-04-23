@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->pbGoAsync->setEnabled(false);
     connect(&dip, SIGNAL(renderedImage(QImage)), this, SLOT(updateOutput(QImage)));
 }
 
@@ -35,7 +36,7 @@ void MainWindow::on_pbGo_clicked()
     ui->lblOutputImage->setText("");
 
     try {
-        dip.processImageSync(inputImage);
+        dip.processImageSync(inputImage, qPrintable(ui->cbFilter->currentText()));
     }
     catch (const std::exception &ex)
     {
@@ -65,4 +66,24 @@ void MainWindow::on_pbGoAsync_clicked()
         msgBox.setText(ex.what());
         msgBox.exec();
     }
+}
+
+void MainWindow::on_pbSet_clicked()
+{
+    try {
+        dip.createPipeline(qPrintable(ui->cbFilter->currentText()));
+        ui->pbGoAsync->setEnabled(true);
+    }
+    catch (const std::exception &ex)
+    {
+        QMessageBox msgBox;
+        msgBox.setText(ex.what());
+        msgBox.exec();
+    }
+}
+
+void MainWindow::on_pbRelease_clicked()
+{
+    dip.releasePipeline();
+    ui->pbGoAsync->setEnabled(false);
 }

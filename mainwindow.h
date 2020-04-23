@@ -26,6 +26,10 @@ private slots:
 
     void on_pbGoAsync_clicked();
 
+    void on_pbSet_clicked();
+
+    void on_pbRelease_clicked();
+
 protected:
     DyploImageProcessor dip;
 

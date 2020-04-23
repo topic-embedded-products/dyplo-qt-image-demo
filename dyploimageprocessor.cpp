@@ -89,7 +89,7 @@ struct DyploImagePipeline
 
     void sendImage(const QImage &input)
     {
-        int size = input.byteCount();
+        int size = input.sizeInBytes();
         if (size != (int)blockSize)
             setBlockSize(size);
         to_logic.write(input.bits(), size);
@@ -126,28 +126,16 @@ DyploImageProcessor::DyploImageProcessor():
 
 DyploImageProcessor::~DyploImageProcessor()
 {
-    delete fromLogicNotifier;
-    delete pr_node;
-    delete dip;
+    releasePipeline();
     delete diContext;
 }
 
 void DyploImageProcessor::createPipeline(const char *partial)
 {
+    releasePipeline();
+
     if (!diContext)
         diContext = new DyploImageContext();
-
-    if (fromLogicNotifier)
-    {
-        delete fromLogicNotifier;
-        fromLogicNotifier = NULL;
-    }
-
-    delete dip;
-    dip = NULL;
-
-    delete pr_node;
-    pr_node = NULL;
 
     int node_id = -1;
     if (partial)
@@ -165,7 +153,7 @@ void DyploImageProcessor::createPipeline(const char *partial)
         pr_node->enableNode();
 }
 
-void DyploImageProcessor::processImageSync(const QImage &input)
+void DyploImageProcessor::releasePipeline()
 {
     if (fromLogicNotifier)
     {
@@ -173,10 +161,31 @@ void DyploImageProcessor::processImageSync(const QImage &input)
         fromLogicNotifier = NULL;
     }
 
-    if (!dip)
-        createPipeline("contrast");
+    if (dip)
+    {
+        delete dip;
+        dip = NULL;
+    }
+
+    if (pr_node)
+    {
+        delete pr_node;
+        pr_node = NULL;
+    }
+}
+
+void DyploImageProcessor::processImageSync(const QImage &input, const char *partial)
+{
+    if (fromLogicNotifier)
+    {
+        delete fromLogicNotifier;
+        fromLogicNotifier = NULL;
+    }
+
+    createPipeline(partial);
     dip->sendImage(input);
     dip->receiveImage();
+    releasePipeline();
 }
 
 void DyploImageProcessor::processImageASync(const QImage &input)

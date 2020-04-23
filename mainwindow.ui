@@ -113,7 +113,7 @@
         <widget class="QPushButton" name="pbQuit">
          <property name="geometry">
           <rect>
-           <x>460</x>
+           <x>540</x>
            <y>10</y>
            <width>89</width>
            <height>25</height>
@@ -135,6 +135,67 @@
          <property name="text">
           <string>Go (Async)</string>
          </property>
+        </widget>
+        <widget class="QPushButton" name="pbSet">
+         <property name="geometry">
+          <rect>
+           <x>340</x>
+           <y>10</y>
+           <width>89</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Set</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="pbRelease">
+         <property name="geometry">
+          <rect>
+           <x>440</x>
+           <y>10</y>
+           <width>89</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Release</string>
+         </property>
+        </widget>
+        <widget class="QComboBox" name="cbFilter">
+         <property name="geometry">
+          <rect>
+           <x>210</x>
+           <y>10</y>
+           <width>121</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <item>
+          <property name="text">
+           <string>rgb_contrast</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>rgb_grayscale</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>rgb_treshold</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>contrast</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>non-existent</string>
+          </property>
+         </item>
         </widget>
        </widget>
       </item>
