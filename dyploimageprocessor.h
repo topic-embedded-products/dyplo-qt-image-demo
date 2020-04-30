@@ -23,6 +23,7 @@ public:
 
     void createPipeline(const char* partial);
     void releasePipeline();
+    bool hasPipeline() { return dip != NULL; }
     // Pass pixels through dyplo and wait for result. Blocks the UI.
     // will emit the renderedimage call synchronously
     void processImageSync(const QImage &input, const char *partial);

@@ -2,12 +2,13 @@
 #include "ui_mainwindow.h"
 #include <QMessageBox>
 
+static const char *filterName = "rgb_contrast";
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->pbGoAsync->setEnabled(false);
     connect(&dip, SIGNAL(renderedImage(QImage)), this, SLOT(updateOutput(QImage)));
 }
 
@@ -29,6 +30,7 @@ void MainWindow::updateOutput(const QImage &image)
     ui->lblOutputImage->setPixmap(pixmap);
 }
 
+/* Synchronous processing, blocks the GUI and if there's no output from logic, it will hang the application */
 void MainWindow::on_pbGo_clicked()
 {
     const QPixmap *input = ui->lblInputImage->pixmap();
@@ -36,7 +38,7 @@ void MainWindow::on_pbGo_clicked()
     ui->lblOutputImage->setText("");
 
     try {
-        dip.processImageSync(inputImage, qPrintable(ui->cbFilter->currentText()));
+        dip.processImageSync(inputImage, filterName);
     }
     catch (const std::exception &ex)
     {
@@ -51,6 +53,7 @@ void MainWindow::on_pbQuit_clicked()
     close();
 }
 
+/* Asynchronous processing, does not block the UI thread. When the FPGA has processed the data in background, updateOutput will be called on the UI thread */
 void MainWindow::on_pbGoAsync_clicked()
 {
     const QPixmap *input = ui->lblInputImage->pixmap();
@@ -58,6 +61,9 @@ void MainWindow::on_pbGoAsync_clicked()
     ui->lblOutputImage->setText("");
 
     try {
+        /* Allocate the pipeline only when needed. It'll be ready for more immediately */
+        if (!dip.hasPipeline())
+            dip.createPipeline(filterName);
         dip.processImageASync(inputImage);
     }
     catch (const std::exception &ex)
@@ -68,22 +74,9 @@ void MainWindow::on_pbGoAsync_clicked()
     }
 }
 
-void MainWindow::on_pbSet_clicked()
-{
-    try {
-        dip.createPipeline(qPrintable(ui->cbFilter->currentText()));
-        ui->pbGoAsync->setEnabled(true);
-    }
-    catch (const std::exception &ex)
-    {
-        QMessageBox msgBox;
-        msgBox.setText(ex.what());
-        msgBox.exec();
-    }
-}
 
 void MainWindow::on_pbRelease_clicked()
 {
     dip.releasePipeline();
-    ui->pbGoAsync->setEnabled(false);
+    ui->lblOutputImage->setPixmap(QPixmap());
 }

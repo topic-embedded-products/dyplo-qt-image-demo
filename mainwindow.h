@@ -21,13 +21,8 @@ public slots:
 
 private slots:
     void on_pbGo_clicked();
-
     void on_pbQuit_clicked();
-
     void on_pbGoAsync_clicked();
-
-    void on_pbSet_clicked();
-
     void on_pbRelease_clicked();
 
 protected:
