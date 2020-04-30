@@ -197,7 +197,7 @@ void DyploImageProcessor::processImageASync(const QImage &input)
     }
 
     if (!dip)
-        createPipeline("contrast");
+        createPipeline("rgb_contrast");
 
     /* dyplo offers poll/select for its descriptors, so you can use a QSocketNotifier to wait for events */
     fromLogicNotifier = new QSocketNotifier(dip->waitHandle(), QSocketNotifier::Read, this);
