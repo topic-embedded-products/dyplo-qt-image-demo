@@ -89,8 +89,8 @@ struct DyploImagePipeline
 
     void sendImage(const QImage &input)
     {
-        int size = input.sizeInBytes();
-        if (size != (int)blockSize)
+        unsigned int size = static_cast<unsigned int>(input.byteCount());
+        if (size != blockSize)
             setBlockSize(size);
         to_logic.write(input.bits(), size);
         width = input.width();
@@ -103,7 +103,7 @@ struct DyploImagePipeline
     {
         dyplo::HardwareDMAFifo::Block *block = from_logic.dequeue();
 
-        owner->imageReceived(QImage((const uchar*)block->data, width, height, bpl, format));
+        owner->imageReceived(QImage(reinterpret_cast<const uchar*>(block->data), width, height, bpl, format));
 
         // Return the DMA buffer to the hardware for re-use
         block->bytes_used = blockSize;
@@ -117,10 +117,10 @@ struct DyploImagePipeline
 };
 
 DyploImageProcessor::DyploImageProcessor():
-    diContext(NULL),
-    dip(NULL),
-    pr_node(NULL),
-    fromLogicNotifier(NULL)
+    diContext(nullptr),
+    dip(nullptr),
+    pr_node(nullptr),
+    fromLogicNotifier(nullptr)
 {
 }
 
@@ -158,19 +158,19 @@ void DyploImageProcessor::releasePipeline()
     if (fromLogicNotifier)
     {
         delete fromLogicNotifier;
-        fromLogicNotifier = NULL;
+        fromLogicNotifier = nullptr;
     }
 
     if (dip)
     {
         delete dip;
-        dip = NULL;
+        dip = nullptr;
     }
 
     if (pr_node)
     {
         delete pr_node;
-        pr_node = NULL;
+        pr_node = nullptr;
     }
 }
 
@@ -179,7 +179,7 @@ void DyploImageProcessor::processImageSync(const QImage &input, const char *part
     if (fromLogicNotifier)
     {
         delete fromLogicNotifier;
-        fromLogicNotifier = NULL;
+        fromLogicNotifier = nullptr;
     }
 
     createPipeline(partial);
@@ -193,7 +193,7 @@ void DyploImageProcessor::processImageASync(const QImage &input)
     if (fromLogicNotifier)
     {
         delete fromLogicNotifier;
-        fromLogicNotifier = NULL;
+        fromLogicNotifier = nullptr;
     }
 
     if (!dip)
