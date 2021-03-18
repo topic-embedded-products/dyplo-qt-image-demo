@@ -1,0 +1,14 @@
+Dyplo Qt Image Processing Example Application
+
+This application demonstrates how to use Dyplo:
+- Allocating and programming "partial reconfigurable" nodes
+- How to use the Dyplo DMA interfaces
+- Process image data
+- Integrate with a GUI and process in background (without threads)
+
+
+Build
+
+This program requires Qt5. For Ubuntu that means you'll have to type this:
+  sudo apt install qt5-default qtbase5-dev qtcreator
+Then run qtcreator and open the .pro file
