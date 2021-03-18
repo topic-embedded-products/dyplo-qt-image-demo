@@ -11,6 +11,13 @@ struct DyploImageContext
         hwControl(hwContext)
     {}
 
+    /*
+     * Looks for a partial matching the requested name. Then
+     * allocates an programs a suitable Dyplo node.
+     * It returns a newly created dyplo::HardwareConfig object
+     * that the caller must free at some time. Until the
+     * object is freed, no other process can use this node.
+     */
     dyplo::HardwareConfig *createConfig(const char *name)
     {
         /* Find a matching PR node */
@@ -46,6 +53,10 @@ struct DyploImageContext
     }
 };
 
+/*
+ * This object integrates Dyplo into the Qt framework, and
+ * allows an image to be processed in the FPGA.
+ */
 struct DyploImagePipeline
 {
     DyploImageProcessor *owner;
@@ -197,21 +208,36 @@ void DyploImageProcessor::processImageASync(const QImage &input)
     }
 
     if (!dip)
-        createPipeline("rgb_contrast");
+        throw std::runtime_error("No pipeline. Call createPipeline() before processImageASync()");
 
     /* dyplo offers poll/select for its descriptors, so you can use a QSocketNotifier to wait for events */
     fromLogicNotifier = new QSocketNotifier(dip->waitHandle(), QSocketNotifier::Read, this);
     connect(fromLogicNotifier, SIGNAL(activated(int)), this, SLOT(frameAvailableDyplo(int)));
     fromLogicNotifier->setEnabled(true);
 
+    /*
+     * Sending the image will not block in this case, since there is enough buffer space
+     * available for both source and target image. If we were processing a stream of data,
+     * we should use a QSocketNotifier in Write mode so we can wait for outgoing buffer
+     * space to become available without blocking the UI thread.
+     */
     dip->sendImage(input);
 }
 
+/*
+ * Called when a frame is available. The data pointed to in the image object is still
+ * located in the DMA buffer. After returning from this method, the buffer will be returned
+ * to the driver, so any data processing must take place in this method.
+ */
 void DyploImageProcessor::imageReceived(const QImage &image)
 {
     emit renderedImage(image);
 }
 
+/*
+ * This gets called by the QSocketNotifier on the UI thread when there's a data
+ * available on the incoming DMA channel from Dyplo.
+ */
 void DyploImageProcessor::frameAvailableDyplo(int)
 {
     if (dip)
