@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QFileDialog>
 #include <QMessageBox>
 
 static const char *filterName = "rgb_contrast";
@@ -74,9 +75,17 @@ void MainWindow::on_pbGoAsync_clicked()
     }
 }
 
-
 void MainWindow::on_pbRelease_clicked()
 {
     dip.releasePipeline();
     ui->lblOutputImage->setPixmap(QPixmap());
+}
+
+void MainWindow::on_pbOpen_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(this,
+        tr("Open Image"), lastFileName, tr("Images (*.png *.jpg *.bmp *.xbm)"));
+    QPixmap newPixmap(fileName, Q_NULLPTR, Qt::ColorOnly);
+    ui->lblInputImage->setPixmap(newPixmap);
+    lastFileName = fileName;
 }

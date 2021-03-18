@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1110</width>
-    <height>567</height>
+    <width>1017</width>
+    <height>539</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,7 +42,7 @@
        <number>0</number>
       </property>
       <item>
-       <layout class="QGridLayout" name="gridLayout">
+       <layout class="QGridLayout" name="gridLayout" columnstretch="1,1" rowminimumheight="0" columnminimumwidth="64,64">
         <property name="spacing">
          <number>4</number>
         </property>
@@ -97,58 +97,43 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <widget class="QPushButton" name="pbGo">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>10</y>
-           <width>89</width>
-           <height>25</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Go! (Sync)</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="pbQuit">
-         <property name="geometry">
-          <rect>
-           <x>460</x>
-           <y>10</y>
-           <width>89</width>
-           <height>25</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Quit</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="pbGoAsync">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>10</y>
-           <width>89</width>
-           <height>25</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Go (Async)</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="pbRelease">
-         <property name="geometry">
-          <rect>
-           <x>240</x>
-           <y>10</y>
-           <width>89</width>
-           <height>25</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Release</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QPushButton" name="pbOpen">
+           <property name="text">
+            <string>&amp;Open...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pbGo">
+           <property name="text">
+            <string>&amp;Go! (Sync)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pbGoAsync">
+           <property name="text">
+            <string>Go (&amp;Async)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pbRelease">
+           <property name="text">
+            <string>&amp;Release</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pbQuit">
+           <property name="text">
+            <string>&amp;Quit</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>

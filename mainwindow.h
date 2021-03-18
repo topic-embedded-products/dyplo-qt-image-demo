@@ -24,9 +24,11 @@ private slots:
     void on_pbQuit_clicked();
     void on_pbGoAsync_clicked();
     void on_pbRelease_clicked();
+    void on_pbOpen_clicked();
 
 protected:
     DyploImageProcessor dip;
+    QString lastFileName;
 
 private:
     Ui::MainWindow *ui;
