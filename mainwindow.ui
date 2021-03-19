@@ -66,6 +66,12 @@
            </property>
            <item>
             <widget class="QScrollArea" name="scrollArea">
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Plain</enum>
+             </property>
              <property name="verticalScrollBarPolicy">
               <enum>Qt::ScrollBarAsNeeded</enum>
              </property>
@@ -84,7 +90,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>480</width>
-                <height>389</height>
+                <height>391</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -158,6 +164,12 @@
            </property>
            <item>
             <widget class="QScrollArea" name="scrollArea_2">
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Plain</enum>
+             </property>
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
@@ -166,8 +178,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>354</width>
-                <height>403</height>
+                <width>356</width>
+                <height>405</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_6">

@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="inputimage">input-image.jpg</file>
+        <file alias="inputimage">lenna.png</file>
     </qresource>
 </RCC>
