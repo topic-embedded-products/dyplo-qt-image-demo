@@ -75,6 +75,7 @@ void MainWindow::on_pbGoAsync_clicked()
     }
 }
 
+/* Releases the Dyplo resources. The async method will re-use the Dyplo pipeline until you press this button */
 void MainWindow::on_pbRelease_clicked()
 {
     dip.releasePipeline();

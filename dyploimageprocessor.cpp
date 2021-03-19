@@ -88,11 +88,28 @@ struct DyploImagePipeline
 
     void setBlockSize(unsigned int blocksize)
     {
+        /*
+         * Configure the DMA engine in zero-copy block mode, using a size large enough
+         * to hold the complete frame. The engine will allocate buffers at least the
+         * blocksize. Using this mode prevents one memcpy operation, as this userspace
+         * program will get direct access to the DMA memory. There is a limit to the
+         * size of the buffer, which is system specific. Usually this limit is 4MB but
+         * the kernel may be configured to allow much larger contiguous buffers.
+         * When processing really large images, divide them into smaller chunks so
+         * that multiple buffers are being used per frame.
+         */
         from_logic.reconfigure(dyplo::HardwareDMAFifo::MODE_COHERENT, blocksize, 2, true);
+        /*
+         * After configuring, the DMA is not active yet. To "prime" the engine, we must
+         * tell it to start capturing and for each block, how many bytes we expect to
+         * receive.
+         */
         for (unsigned int i = 0; i < from_logic.count(); ++i)
         {
             dyplo::HardwareDMAFifo::Block *block = from_logic.dequeue();
             block->bytes_used = blocksize; // How many bytes we want to receive
+            /* After this call, the DMA engine will start filling the block
+             * with any data that arrives on the DMA node */
             from_logic.enqueue(block);
         }
         blockSize = blocksize;
@@ -103,6 +120,20 @@ struct DyploImagePipeline
         unsigned int size = static_cast<unsigned int>(input.byteCount());
         if (size != blockSize)
             setBlockSize(size);
+        /*
+         * To send the image data to Dyplo, we use the simplest interface possible, the
+         * regular write() call. This incurs a memcpy operation, as the Dyplo driver will
+         * copy the data from our image into the DMA buffers. There is no practical limit
+         * to the size of the transfer, but the write call will block if it has to wait
+         * for room in the outgoing DMA buffer.
+         * Three ways to prevent the write call to block:
+         * (1) Use a zero-copy DMA buffer like the receive size is using and make it large
+         * enough to fit.
+         * (2) Set the to_logic file descriptor to non-blocking mode, and use a
+         * QSocketNotifier to get a notification when there's space available to supply
+         * more data.
+         * (3) Start a separate thread and do the write call there.
+         */
         to_logic.write(input.bits(), size);
         width = input.width();
         height = input.height();
@@ -112,11 +143,16 @@ struct DyploImagePipeline
 
     void receiveImage()
     {
+        /*
+         * Request the block descriptor from the DMA engine. This will give us
+         * access to the data in the DMA buffer through the "data" pointer.
+         */
         dyplo::HardwareDMAFifo::Block *block = from_logic.dequeue();
 
+        /* Re-interpret the buffer as a QImage, this does not make a copy of the image data */
         owner->imageReceived(QImage(reinterpret_cast<const uchar*>(block->data), width, height, bpl, format));
 
-        // Return the DMA buffer to the hardware for re-use
+        /* After processing we can return the DMA buffer to the hardware for re-use */
         block->bytes_used = blockSize;
         from_logic.enqueue(block);
     }
