@@ -87,6 +87,6 @@ void MainWindow::on_pbOpen_clicked()
         tr("Open Image"), lastFileName, tr("Images (*.png *.jpg *.bmp *.xbm)"));
     QPixmap newPixmap(fileName, Q_NULLPTR, Qt::ColorOnly);
     ui->lblInputImage->setPixmap(newPixmap);
-    ui->lblOutputImage->setPixmap(newPixmap);
+    ui->lblOutputImage->setPixmap(QPixmap());
     lastFileName = fileName;
 }
