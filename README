@@ -9,6 +9,15 @@ This application demonstrates how to use Dyplo:
 
 Build
 
+If you're using OpenEmbedded or Yocto to compile, this recipe provides a good
+example:
+  https://github.com/topic-embedded-products/meta-topic-desktop/blob/master/meta-topic-desktop/recipes-topic-desktop/demo/dyplo-qt-image-demo.bb
+
+The program requires "libdyplo" to be present. Dowload, compile and install
+libdyplo from here:
+  https://github.com/topic-embedded-products/libdyplo
+Run "sudo make install" to make it available for your system.
+
 This program requires Qt5. For Ubuntu that means you'll have to type this:
   sudo apt install qt5-default qtbase5-dev qtcreator
 Then run qtcreator and open the .pro file
