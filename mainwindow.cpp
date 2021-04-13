@@ -3,7 +3,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-static const char *filterName = "rgb_contrast";
+static const char *filterName = "rgb_treshold";
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
